@@ -17,7 +17,8 @@ class Settings(BaseSettings):
     # --- App Settings ---
     APP_NAME: str = "Document Copilot"
     # Comma-separated list of allowed origins for CORS (e.g., "http://localhost:5173,http://localhost:3000")
-    ALLOWED_ORIGINS: str = "http://localhost:5173"
+    # ALLOWED_ORIGINS: str = "http://localhost:5173"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,https://your-frontend-url.vercel.app"
 
     # --- Supabase Settings ---
     SUPABASE_URL: str = Field(..., description="Supabase project URL")

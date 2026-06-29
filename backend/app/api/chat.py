@@ -7,6 +7,8 @@ from app.auth.dependencies import get_current_user
 from app.database import chats
 from app.chat.messages import StreamRequest
 from app.chat.streaming import format_text_delta, format_error, format_finish
+from app.chat.orchestrator import run_chat_turn
+
 
 router = APIRouter()
 
@@ -33,48 +35,55 @@ def get_messages(thread_id: str, current_user: dict = Depends(get_current_user))
         raise HTTPException(status_code=403, detail="Forbidden")
     return chats.get_messages(thread_id)
 
+
+
 @router.post("/chat/stream")
 async def stream_chat(
     request: StreamRequest, 
     current_user: dict = Depends(get_current_user)
 ):
-    # 1. Verify ownership (403 if another user's thread)
-    # Note: We now use request.id instead of request.threadId
+    # 1. Verify ownership
     thread = chats.get_thread(request.id, current_user["id"])
     if not thread:
         raise HTTPException(status_code=403, detail="Forbidden")
         
-    # 2. Extract the text from the new user message's "parts" array
+    # 2. Extract the user message
     user_msg = request.messages[-1]
     user_content = "".join(part.text for part in user_msg.parts if part.type == "text")
     
-    # 3. Save the new user message to the database
+    # 3. Save the user message
     chats.save_message(request.id, "user", user_content)
 
-    # 3. Stream the stubbed response
+    # 4. Stream the agent response
     async def generate():
         try:
-            stubbed_text = "Hello! This is a stubbed response from the Document Copilot backend. In Phase 6, I will be replaced by a real AI agent that reads SEC filings!"
+            # Run the orchestrator
+            result = await run_chat_turn(
+                thread_id=request.id,
+                user_id=current_user["id"],
+                user_message=user_content,
+            )
             
-            # Simulate streaming character by character
-            for char in stubbed_text:
+            # Stream the answer character by character
+            for char in result["answer"]:
                 yield format_text_delta(char)
-                await asyncio.sleep(0.03) 
-                
-            # Save the completed assistant message
-            chats.save_message(request.id, "assistant", stubbed_text)
+                await asyncio.sleep(0.01)  # Simulate streaming
+            
+            # Save the assistant message
+            chats.save_message(request.id, "assistant", result["answer"])
+            
+            # TODO: Save citations to message_citations table (we'll add this next)
+            
             yield format_finish()
             
         except Exception as e:
             yield format_error(str(e))
 
-    # return StreamingResponse(generate(), media_type="text/plain; charset=utf-8")
     return StreamingResponse(
         generate(), 
-        media_type="text/event-stream",  # This is what AI SDK expects
+        media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",  # Disable nginx buffering if you use it
         }
     )
