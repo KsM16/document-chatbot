@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+
+# Environment Variables (CRITICAL)
+.env
+.env.local
+.env.*.local
+
+# Data payloads (as per data/README.md)
+data/downloads/
+
+# IDE / OS
+.vscode/
+.DS_Store
+Thumbs.db
