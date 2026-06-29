@@ -1,10 +1,11 @@
 // frontend/src/App.tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute.tsx' ;
+import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import Home from './pages/Home';
+import ChatList from './pages/chat/ChatList';
+import ChatThread from './pages/chat/ChatThread';
 
 function App() {
   return (
@@ -17,8 +18,8 @@ function App() {
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Home />} />
-            {/* We will add Chat routes here in Phase 3 */}
+            <Route path="/" element={<ChatList />} />
+            <Route path="/chat/:threadId" element={<ChatThread />} />
           </Route>
         </Routes>
       </BrowserRouter>

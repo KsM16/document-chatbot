@@ -3,7 +3,8 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.auth.dependencies import get_current_user # <-- NEW IMPORT
+from app.auth.dependencies import get_current_user 
+from app.api import chat
 
 app = FastAPI(title=settings.APP_NAME)
 
@@ -16,6 +17,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(chat.router)
 
 
 @app.get("/")
