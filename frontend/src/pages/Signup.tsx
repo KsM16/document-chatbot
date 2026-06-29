@@ -31,7 +31,7 @@ export default function Signup() {
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Create Account</CardTitle>
-          <CardDescription>Join Driftwood Capital analysts.</CardDescription>
+          <CardDescription>Create a demo account to explore the app</CardDescription>
         </CardHeader>
         <form onSubmit={handleSignup}>
           <CardContent className="space-y-4">

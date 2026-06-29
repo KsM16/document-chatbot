@@ -42,6 +42,13 @@ export default function Login() {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
+            
+            {/* Demo Credentials Box */}
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm">
+              <p className="font-semibold text-blue-800 mb-1">Demo Credentials:</p>
+              <p className="text-blue-700">Email: <code className="bg-blue-100 px-1 rounded">example@user.com</code></p>
+              <p className="text-blue-700">Password: <code className="bg-blue-100 px-1 rounded">passwordtest</code></p>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={loading}>
